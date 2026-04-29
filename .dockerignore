@@ -1,0 +1,26 @@
+# Build artifacts (régénérés dans l'image)
+target/
+*.jar
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Maven wrapper (on utilise le mvn de l'image build)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Secrets (montés en volume, jamais dans l'image)
+keys/
+
+# Docs et logs
+*.md
+*.log
+logs/

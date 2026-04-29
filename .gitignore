@@ -1,0 +1,88 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# --- Build outputs ---
+target/
+build/
+out/
+*.jar
+*.war
+*.class
+
+# --- Maven ---
+.mvn/
+mvnw
+mvnw.cmd
+dependency-reduced-pom.xml
+
+# --- IDE ---
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.project
+.classpath
+.settings/
+.factorypath
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Spring Boot ---
+spring.log
+application-local.yml
+application-local.properties
+
+# --- Secrets et clés (CRITIQUE) ---
+.env
+.env.local
+.env.*.local
+*/keys/*.pem
+*/keys/*.key
+**/keys/private*
+**/keys/*.p12
+
+# --- Tests ---
+.scannerwork/
+coverage/
+
+# --- Docker ---
+.docker/

@@ -1,0 +1,62 @@
+services:
+
+  # ==========================================================================
+  # Postgres dédié à identity-service (Database-per-Service)
+  # ==========================================================================
+  postgres-identity:
+    image: postgres:16-alpine
+    container_name: postgres-identity
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: identity_db
+      POSTGRES_USER: identity_user
+      POSTGRES_PASSWORD: identity_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_identity_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U identity_user -d identity_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - microservices-net
+
+  # ==========================================================================
+  # identity-service (Spring Boot)
+  # ==========================================================================
+  identity-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: identity-service
+    restart: unless-stopped
+    depends_on:
+      postgres-identity:
+        condition: service_healthy
+    environment:
+      # Networking interne : on parle au Postgres par son NOM, pas localhost
+      DB_URL: jdbc:postgresql://postgres-identity:5432/identity_db
+      DB_USER: identity_user
+      DB_PASSWORD: identity_pass
+      # Clés montées via le volume ./keys (cf. volumes ci-dessous)
+      JWT_PRIVATE_KEY_PATH: /app/keys/private_key.pem
+      JWT_PUBLIC_KEY_PATH: /app/keys/public_key.pem
+      JWT_EXPIRATION_MINUTES: 60
+      JWT_ISSUER: identity-service
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    volumes:
+      # Montage read-only des clés depuis l'hôte (jamais dans l'image)
+      - ./keys:/app/keys:ro
+    networks:
+      - microservices-net
+
+volumes:
+  postgres_identity_data:
+
+networks:
+  microservices-net:
+    driver: bridge

@@ -1,0 +1,66 @@
+# ============================================================================
+# Configuration du service Identity
+# ----------------------------------------------------------------------------
+# Convention : tout secret se lit via ${VARIABLE_ENV:fallback_dev}
+# Le fallback ne sert qu'en dev local — JAMAIS de vrai secret ici
+# ============================================================================
+
+# ----- Serveur HTTP -----
+server:
+  port: ${SERVER_PORT:8081}            # 8081 pour ne pas collision avec le monolithe (8080)
+  servlet:
+    context-path: /                     # Pas de préfixe global (les routes commencent par /api/v1/...)
+
+# ----- Spring Boot -----
+spring:
+  application:
+    name: identity-service              # Nom utilisé pour les logs et la future Service Discovery
+
+  # ----- Base de données PostgreSQL (propre au service !) -----
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/identity_db}
+    username: ${DB_USER:identity_user}
+    password: ${DB_PASSWORD:identity_pass}
+    driver-class-name: org.postgresql.Driver
+
+  # ----- JPA / Hibernate -----
+  jpa:
+    hibernate:
+      ddl-auto: validate                # Flyway gère le schéma. Hibernate VALIDE qu'il match les entités.
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false                     # true en dev pour debug, false en prod
+
+  # ----- Flyway (migrations DB versionnées) -----
+  flyway:
+    enabled: true
+    baseline-on-migrate: true           # Crée la table flyway_schema_history si elle n'existe pas
+    locations: classpath:db/migration   # Où Flyway cherche les V1__*.sql, V2__*.sql
+
+# ----- Configuration JWT (signature RS256) -----
+jwt:
+  # Chemins vers les clés RSA (les vraies clés seront générées Sprint 2 mini-étape suivante)
+  private-key-path: ${JWT_PRIVATE_KEY_PATH:keys/private_key.pem}
+  public-key-path:  ${JWT_PUBLIC_KEY_PATH:keys/public_key.pem}
+  expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+  refresh-expiration-days: ${JWT_REFRESH_EXPIRATION_DAYS:7}
+  issuer: ${JWT_ISSUER:identity-service}
+
+# ----- Spring Boot Actuator (santé, métriques) -----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info            # On n'expose QUE health et info publiquement
+  endpoint:
+    health:
+      show-details: when-authorized     # Détails seulement si user authentifié
+
+# ----- Logging -----
+logging:
+  level:
+    root: INFO
+    com.restaurant.identity: DEBUG       # Logs de notre code en DEBUG
+    org.springframework.security: INFO   # Mettre DEBUG si problème d'auth à investiguer
