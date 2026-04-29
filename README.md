@@ -10,7 +10,7 @@ Migration d'un monolithe Spring Boot (`../backend/`) vers une architecture micro
 
 | Service | Responsabilité | Sprint d'extraction |
 |---|---|---|
-| `identity-service` | Auth, comptes, JWT, rôles (CLIENT/STAFF/ADMIN/SUPER_ADMIN) | S2 (en cours) |
+| `identity-service` | Auth, comptes, JWT, rôles (CLIENT/STAFF/ADMIN/SUPER_ADMIN) | S2 (validé) |
 | `catalog-service` | Menu, catégories, disponibilité, prix | S3 |
 | `ordering-service` | Panier, commande, statut, historique | S4 |
 | `payment-service` | Stripe, transactions, factures | S5 |
